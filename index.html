@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Market Cap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-deep: #071018;
+      --panel: rgba(14, 28, 40, 0.88);
+      --panel-solid: #0e1c28;
+      --input: #08131c;
+      --border: rgba(120, 170, 190, 0.18);
+      --border-strong: rgba(56, 210, 180, 0.5);
+      --border-error: rgba(255, 107, 122, 0.55);
+      --text: #f0f7fa;
+      --muted: #8aa0b2;
+      --accent: #3ee0c2;
+      --accent-2: #5ec8ff;
+      --profit: #3dffa0;
+      --loss: #ff6b7a;
+      --warn: #ffc857;
+      --glow: rgba(62, 224, 194, 0.35);
+      --title-grad: linear-gradient(120deg, #ffffff 10%, #3ee0c2 55%, #5ec8ff 100%);
+      --badge-bg: rgba(62, 224, 194, 0.1);
+      --badge-border: rgba(62, 224, 194, 0.25);
+      --prefix-bg: rgba(62, 224, 194, 0.06);
+      --preset-bg: rgba(255, 255, 255, 0.03);
+      --preset-hover-bg: rgba(62, 224, 194, 0.12);
+      --preset-hover-border: rgba(62, 224, 194, 0.4);
+      --preset-active-bg: rgba(62, 224, 194, 0.18);
+      --stat-bg: rgba(8, 19, 28, 0.72);
+      --stat-highlight: linear-gradient(135deg, rgba(62, 224, 194, 0.16), rgba(94, 200, 255, 0.08));
+      --stat-highlight-border: rgba(62, 224, 194, 0.3);
+      --focus-ring: rgba(62, 224, 194, 0.14);
+      --error-ring: rgba(255, 107, 122, 0.18);
+      --placeholder: #4a6070;
+      --grid-line: rgba(255, 255, 255, 0.015);
+      --bg-glow-1: rgba(62, 224, 194, 0.16);
+      --bg-glow-2: rgba(94, 200, 255, 0.12);
+      --bg-glow-3: rgba(255, 200, 87, 0.05);
+      --bg-grad: linear-gradient(165deg, #071018 0%, #0b1a26 45%, #08141c 100%);
+      --panel-shadow: rgba(0, 0, 0, 0.45);
+      --toggle-bg: rgba(14, 28, 40, 0.92);
+      --toggle-icon: #f0f7fa;
+      --font: "Sora", sans-serif;
+      --mono: "IBM Plex Mono", monospace;
+      color-scheme: dark;
+    }
+
+    [data-theme="light"] {
+      --bg-deep: #e4eef3;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-solid: #ffffff;
+      --input: #ffffff;
+      --border: rgba(40, 90, 110, 0.12);
+      --border-strong: rgba(8, 150, 135, 0.55);
+      --border-error: rgba(220, 61, 78, 0.55);
+      --text: #0d1b24;
+      --muted: #4d6678;
+      --accent: #089484;
+      --accent-2: #0f7eb5;
+      --profit: #059669;
+      --loss: #dc3d4e;
+      --warn: #b8860b;
+      --glow: rgba(8, 148, 132, 0.28);
+      --title-grad: linear-gradient(125deg, #0a1f2c 0%, #089484 48%, #0f7eb5 100%);
+      --badge-bg: rgba(8, 148, 132, 0.12);
+      --badge-border: rgba(8, 148, 132, 0.3);
+      --prefix-bg: rgba(8, 148, 132, 0.1);
+      --preset-bg: #ffffff;
+      --preset-hover-bg: rgba(8, 148, 132, 0.12);
+      --preset-hover-border: rgba(8, 148, 132, 0.4);
+      --preset-active-bg: rgba(8, 148, 132, 0.16);
+      --stat-bg: #f4fafb;
+      --stat-highlight: linear-gradient(135deg, rgba(8, 148, 132, 0.16), rgba(15, 126, 181, 0.1));
+      --stat-highlight-border: rgba(8, 148, 132, 0.32);
+      --focus-ring: rgba(8, 148, 132, 0.18);
+      --error-ring: rgba(220, 61, 78, 0.16);
+      --placeholder: #91a8b6;
+      --grid-line: rgba(25, 70, 90, 0.045);
+      --bg-glow-1: rgba(8, 148, 132, 0.18);
+      --bg-glow-2: rgba(15, 126, 181, 0.14);
+      --bg-glow-3: rgba(255, 180, 80, 0.1);
+      --bg-grad: linear-gradient(160deg, #d9ebea 0%, #e8f2f6 38%, #f2f7fa 70%, #e6eef4 100%);
+      --panel-shadow: rgba(25, 60, 80, 0.12);
+      --toggle-bg: rgba(255, 255, 255, 0.95);
+      --toggle-icon: #0d1b24;
+      color-scheme: light;
+    }
+
+    [data-theme="light"] .panel {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 24px 50px -18px rgba(30, 70, 90, 0.18),
+        0 8px 20px -10px rgba(8, 148, 132, 0.12);
+      border-color: rgba(255, 255, 255, 0.85);
+      animation: none;
+    }
+
+    [data-theme="light"] .input-wrap {
+      box-shadow: 0 1px 2px rgba(30, 70, 90, 0.04);
+    }
+
+    [data-theme="light"] .input-wrap:focus-within:not(.invalid) {
+      box-shadow: 0 0 0 3px var(--focus-ring), 0 2px 8px rgba(8, 148, 132, 0.1);
+    }
+
+    [data-theme="light"] .mcap-presets button {
+      box-shadow: 0 1px 2px rgba(30, 70, 90, 0.05);
+    }
+
+    [data-theme="light"] .stat {
+      border-color: rgba(40, 90, 110, 0.06);
+      box-shadow: 0 1px 2px rgba(30, 70, 90, 0.03);
+    }
+
+    [data-theme="light"] .stat.highlight {
+      box-shadow: 0 4px 14px -6px rgba(8, 148, 132, 0.25);
+    }
+
+    [data-theme="light"] .theme-toggle {
+      box-shadow: 0 6px 18px rgba(30, 70, 90, 0.12);
+    }
+
+    [data-theme="light"] .arrow {
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(30, 70, 90, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100dvh;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 20%, var(--bg-glow-1), transparent 55%),
+        radial-gradient(ellipse 45% 35% at 90% 75%, var(--bg-glow-2), transparent 50%),
+        radial-gradient(ellipse 30% 25% at 60% 10%, var(--bg-glow-3), transparent 45%),
+        var(--bg-grad);
+      z-index: 0;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: max(0.75rem, env(safe-area-inset-top));
+      right: max(0.75rem, env(safe-area-inset-right));
+      z-index: 10;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--toggle-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--toggle-icon);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px var(--panel-shadow);
+      transition: transform 0.15s, border-color 0.15s, background 0.2s;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      border-color: var(--border-strong);
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    [data-theme="light"] .theme-toggle .icon-sun { display: block; }
+    [data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(-2%, 1.5%) scale(1.04); }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-soft {
+      0%, 100% { box-shadow: 0 0 0 0 transparent, 0 20px 50px var(--panel-shadow); }
+      50% { box-shadow: 0 0 40px -8px var(--glow), 0 20px 50px var(--panel-shadow); }
+    }
+
+    .app {
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      z-index: 1;
+      animation: rise 0.5s ease-out;
+    }
+
+    header {
+      margin-bottom: 1.4rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      padding: 0.32rem 0.72rem;
+      border-radius: 999px;
+      margin-bottom: 0.8rem;
+    }
+
+    .badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    header h1 {
+      font-size: clamp(1.9rem, 5.5vw, 2.45rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+      background: var(--title-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .panel {
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.35rem;
+      animation: pulse-soft 6s ease-in-out infinite;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    .field-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.42rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--muted);
+    }
+
+    .parsed {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .parsed.show { opacity: 1; }
+    .parsed.error {
+      color: var(--loss);
+      opacity: 1;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: stretch;
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .input-wrap:focus-within:not(.invalid) {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+      transform: translateY(-1px);
+    }
+
+    .input-wrap.invalid {
+      border-color: var(--border-error);
+      box-shadow: 0 0 0 3px var(--error-ring);
+    }
+
+    .prefix {
+      display: flex;
+      align-items: center;
+      padding: 0 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--prefix-bg);
+      border-right: 1px solid var(--border);
+      user-select: none;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 1.08rem;
+      font-weight: 600;
+      padding: 0.82rem 0.95rem;
+      outline: none;
+      letter-spacing: -0.01em;
+    }
+
+    input::placeholder {
+      color: var(--placeholder);
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .mcap-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .mcap-presets button {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.34rem 0.58rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--preset-bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
+    }
+
+    .mcap-presets button:hover {
+      color: var(--accent);
+      border-color: var(--preset-hover-border);
+      background: var(--preset-hover-bg);
+      transform: translateY(-1px);
+    }
+
+    .mcap-presets button.active {
+      color: var(--accent);
+      border-color: var(--preset-hover-border);
+      background: var(--preset-active-bg);
+    }
+
+    .arrow-row {
+      display: flex;
+      justify-content: center;
+      margin: 0.1rem 0 0.95rem;
+    }
+
+    .arrow {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--panel-solid);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .results {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 0.15rem;
+    }
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.82rem 1rem;
+      background: var(--stat-bg);
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+
+    .stat.highlight {
+      background: var(--stat-highlight);
+      border-color: var(--stat-highlight-border);
+    }
+
+    .stat .name {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--muted);
+    }
+
+    .stat .value {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: right;
+      word-break: break-all;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat.highlight .value {
+      font-size: 1.18rem;
+    }
+
+    .stat .value.profit { color: var(--profit); }
+    .stat .value.loss { color: var(--loss); }
+    .stat .value.neutral { color: var(--warn); }
+
+    @media (max-width: 480px) {
+      body {
+        align-items: flex-start;
+        padding-top: max(4.25rem, calc(env(safe-area-inset-top) + 3.5rem));
+      }
+
+      .app {
+        max-width: 100%;
+      }
+
+      .panel {
+        padding: 1.1rem;
+        border-radius: 16px;
+      }
+
+      header h1 {
+        font-size: clamp(1.65rem, 8vw, 2rem);
+      }
+
+      input {
+        font-size: 1rem;
+      }
+
+      .stat {
+        padding: 0.75rem 0.85rem;
+      }
+
+      .stat .value {
+        font-size: 0.98rem;
+      }
+
+      .stat.highlight .value {
+        font-size: 1.08rem;
+      }
+
+      .theme-toggle {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (max-height: 700px) and (max-width: 480px) {
+      body {
+        align-items: flex-start;
+      }
+
+      header {
+        margin-bottom: 1rem;
+      }
+
+      .field {
+        margin-bottom: 0.9rem;
+      }
+    }
+  </style>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("mcap-theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+</head>
+<body>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Light / Dark">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z" />
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  </button>
+
+  <div class="app">
+    <header>
+      <div class="badge">Live calc</div>
+      <h1>Market Cap</h1>
+    </header>
+
+    <div class="panel">
+      <div class="field">
+        <div class="field-head">
+          <label for="investment">Lacagta aad gelisay</label>
+          <span class="parsed" id="investmentParsed"></span>
+        </div>
+        <div class="input-wrap" id="investmentWrap">
+          <span class="prefix">$</span>
+          <input id="investment" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="100 ama 1k" value="100" />
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="entryMcap">Entry Market Cap</label>
+          <span class="parsed" id="entryParsed"></span>
+        </div>
+        <div class="input-wrap" id="entryWrap">
+          <span class="prefix">$</span>
+          <input id="entryMcap" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="50k ama 100k" value="50k" />
+        </div>
+        <div class="mcap-presets" data-target="entryMcap">
+          <button type="button" data-value="10k">10K</button>
+          <button type="button" data-value="50k">50K</button>
+          <button type="button" data-value="100k">100K</button>
+          <button type="button" data-value="500k">500K</button>
+          <button type="button" data-value="1m">1M</button>
+        </div>
+      </div>
+
+      <div class="arrow-row" aria-hidden="true">
+        <div class="arrow">↓</div>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="exitMcap">Exit Market Cap</label>
+          <span class="parsed" id="exitParsed"></span>
+        </div>
+        <div class="input-wrap" id="exitWrap">
+          <span class="prefix">$</span>
+          <input id="exitMcap" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="1m ama 5m" value="1m" />
+        </div>
+        <div class="mcap-presets" data-target="exitMcap">
+          <button type="button" data-value="100k">100K</button>
+          <button type="button" data-value="500k">500K</button>
+          <button type="button" data-value="1m">1M</button>
+          <button type="button" data-value="5m">5M</button>
+          <button type="button" data-value="10m">10M</button>
+          <button type="button" data-value="100m">100M</button>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="stat">
+          <span class="name">Multiplier</span>
+          <span class="value" id="multiplier">—</span>
+        </div>
+        <div class="stat">
+          <span class="name">Qiimaha ugu dambeeya</span>
+          <span class="value" id="finalValue">—</span>
+        </div>
+        <div class="stat highlight">
+          <span class="name">Faa'idada / Khasaaraha</span>
+          <span class="value" id="profit">—</span>
+        </div>
+        <div class="stat">
+          <span class="name">ROI %</span>
+          <span class="value" id="roi">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const investmentEl = document.getElementById("investment");
+    const entryEl = document.getElementById("entryMcap");
+    const exitEl = document.getElementById("exitMcap");
+    const investmentWrap = document.getElementById("investmentWrap");
+    const entryWrap = document.getElementById("entryWrap");
+    const exitWrap = document.getElementById("exitWrap");
+    const investmentParsed = document.getElementById("investmentParsed");
+    const entryParsed = document.getElementById("entryParsed");
+    const exitParsed = document.getElementById("exitParsed");
+    const multiplierEl = document.getElementById("multiplier");
+    const finalValueEl = document.getElementById("finalValue");
+    const profitEl = document.getElementById("profit");
+    const roiEl = document.getElementById("roi");
+
+    const SUFFIX = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 };
+    const STORAGE_KEY = "mcap-inputs";
+
+    /** Accepts: 100, 1k, 100K, 1.5m, 2.5B, $50k, 1,000,000 */
+    function parseAmount(raw) {
+      if (raw == null) return NaN;
+      let s = String(raw).trim().toLowerCase().replace(/[$,\s_]/g, "");
+      if (!s) return NaN;
+
+      // allow trailing decimal while typing: "100." → 100
+      if (/\.$/.test(s)) s = s.slice(0, -1);
+      if (!s) return NaN;
+
+      const match = s.match(/^(-?\d+(?:\.\d+)?)([kmbt])?$/);
+      if (!match) return NaN;
+
+      const num = Number(match[1]);
+      if (!Number.isFinite(num)) return NaN;
+      return num * (match[2] ? SUFFIX[match[2]] : 1);
+    }
+
+    function trimNum(n) {
+      return Number(n.toPrecision(6)).toString();
+    }
+
+    function formatCompact(n) {
+      if (!Number.isFinite(n)) return "";
+      const abs = Math.abs(n);
+      const sign = n < 0 ? "-" : "";
+      if (abs >= 1e12) return sign + trimNum(abs / 1e12) + "T";
+      if (abs >= 1e9) return sign + trimNum(abs / 1e9) + "B";
+      if (abs >= 1e6) return sign + trimNum(abs / 1e6) + "M";
+      if (abs >= 1e3) return sign + trimNum(abs / 1e3) + "K";
+      return sign + trimNum(abs);
+    }
+
+    function formatMoney(n) {
+      if (!Number.isFinite(n)) return "—";
+      const abs = Math.abs(n);
+      const neg = n < 0 ? "-" : "";
+      if (abs >= 1e6) return neg + "$" + formatCompact(abs);
+      return neg + "$" + abs.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function formatX(n) {
+      if (!Number.isFinite(n)) return "—";
+      if (n >= 1000) return formatCompact(n) + "x";
+      if (n >= 100) return n.toFixed(1) + "x";
+      if (n >= 10) return n.toFixed(2) + "x";
+      return n.toFixed(3) + "x";
+    }
+
+    function formatPct(n) {
+      if (!Number.isFinite(n)) return "—";
+      const sign = n > 0 ? "+" : n < 0 ? "" : "";
+      if (Math.abs(n) >= 10000) return sign + formatCompact(n) + "%";
+      return sign + n.toFixed(1) + "%";
+    }
+
+    function setTone(el, value) {
+      el.classList.remove("profit", "loss", "neutral");
+      if (value > 0) el.classList.add("profit");
+      else if (value < 0) el.classList.add("loss");
+      else el.classList.add("neutral");
+    }
+
+    function setFieldState(wrap, parsedEl, raw, value, { requirePositive }) {
+      const empty = !String(raw).trim();
+      const invalid = !empty && !Number.isFinite(value);
+      const badValue = Number.isFinite(value) && requirePositive && !(value > 0);
+
+      wrap.classList.toggle("invalid", invalid || badValue);
+      parsedEl.classList.remove("error", "show");
+
+      if (empty) {
+        parsedEl.textContent = "";
+        return;
+      }
+      if (invalid) {
+        parsedEl.textContent = "format khaldan";
+        parsedEl.classList.add("error");
+        return;
+      }
+      if (badValue) {
+        parsedEl.textContent = "0 ka weyn noqo";
+        parsedEl.classList.add("error");
+        return;
+      }
+
+      const looksShorthand = /[kmbt]/i.test(String(raw));
+      if (looksShorthand || value >= 1000) {
+        parsedEl.textContent = "= $" + formatCompact(value);
+        parsedEl.classList.add("show");
+      } else {
+        parsedEl.textContent = "";
+      }
+    }
+
+    function syncPresets() {
+      document.querySelectorAll(".mcap-presets").forEach((group) => {
+        const target = document.getElementById(group.dataset.target);
+        const current = String(target.value).trim().toLowerCase();
+        group.querySelectorAll("button").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.value === current);
+        });
+      });
+    }
+
+    function saveInputs() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          investment: investmentEl.value,
+          entry: entryEl.value,
+          exit: exitEl.value,
+        }));
+      } catch (e) {}
+    }
+
+    function loadInputs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.investment != null) investmentEl.value = data.investment;
+        if (data.entry != null) entryEl.value = data.entry;
+        if (data.exit != null) exitEl.value = data.exit;
+      } catch (e) {}
+    }
+
+    function calc() {
+      const invRaw = investmentEl.value;
+      const entryRaw = entryEl.value;
+      const exitRaw = exitEl.value;
+
+      const investment = parseAmount(invRaw);
+      const entry = parseAmount(entryRaw);
+      const exit = parseAmount(exitRaw);
+
+      setFieldState(investmentWrap, investmentParsed, invRaw, investment, { requirePositive: true });
+      setFieldState(entryWrap, entryParsed, entryRaw, entry, { requirePositive: true });
+      setFieldState(exitWrap, exitParsed, exitRaw, exit, { requirePositive: false });
+      syncPresets();
+      saveInputs();
+
+      const exitOk = Number.isFinite(exit) && exit >= 0;
+      if (!(investment > 0) || !(entry > 0) || !exitOk) {
+        multiplierEl.textContent = "—";
+        finalValueEl.textContent = "—";
+        profitEl.textContent = "—";
+        roiEl.textContent = "—";
+        setTone(profitEl, 0);
+        setTone(roiEl, 0);
+        setTone(multiplierEl, 0);
+        setTone(finalValueEl, 0);
+        return;
+      }
+
+      const mult = exit / entry;
+      const finalValue = investment * mult;
+      const profit = finalValue - investment;
+      const roi = (profit / investment) * 100;
+
+      multiplierEl.textContent = formatX(mult);
+      finalValueEl.textContent = formatMoney(finalValue);
+      profitEl.textContent = (profit > 0 ? "+" : "") + formatMoney(profit);
+      roiEl.textContent = formatPct(roi);
+
+      setTone(profitEl, profit);
+      setTone(roiEl, profit);
+      setTone(multiplierEl, mult - 1);
+      setTone(finalValueEl, profit);
+    }
+
+    loadInputs();
+
+    [investmentEl, entryEl, exitEl].forEach((el) => {
+      el.addEventListener("input", calc);
+    });
+
+    document.querySelectorAll(".mcap-presets").forEach((group) => {
+      const target = document.getElementById(group.dataset.target);
+      group.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          target.value = btn.dataset.value;
+          calc();
+          target.focus();
+        });
+      });
+    });
+
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    function currentTheme() {
+      return root.getAttribute("data-theme") === "light" ? "light" : "dark";
+    }
+
+    function setTheme(theme) {
+      root.setAttribute("data-theme", theme);
+      try {
+        localStorage.setItem("mcap-theme", theme);
+      } catch (e) {}
+      themeToggle.setAttribute(
+        "aria-label",
+        theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+      );
+    }
+
+    themeToggle.addEventListener("click", () => {
+      setTheme(currentTheme() === "light" ? "dark" : "light");
+    });
+
+    setTheme(currentTheme());
+    calc();
+  </script>
+</body>
+</html>
